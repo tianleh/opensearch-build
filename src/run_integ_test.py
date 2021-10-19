@@ -44,32 +44,50 @@ def main():
         logging.info("Switching to temporary work_dir: " + work_dir)
         test_recorder = TestRecorder(args.test_run_id, "integ-test", work_dir)
         os.chdir(work_dir)
-        bundle_manifest = BundleManifest.from_s3(
-            args.s3_bucket, args.build_id, args.opensearch_version, args.architecture, work_dir)
-        build_manifest = BuildManifest.from_s3(
-            args.s3_bucket, args.build_id, args.opensearch_version, args.architecture, work_dir)
+        # bundle_manifest = BundleManifest.from_s3(
+        #     args.s3_bucket, args.build_id, args.opensearch_version, args.architecture, work_dir)
+        # build_manifest = BuildManifest.from_s3(
+        #     args.s3_bucket, args.build_id, args.opensearch_version, args.architecture, work_dir)
         pull_build_repo(work_dir)
-        DependencyInstaller(build_manifest.build).install_all_maven_dependencies()
+        # DependencyInstaller(build_manifest.build).install_all_maven_dependencies()
         all_results = TestSuiteResults()
-        for component in bundle_manifest.components:
-            if component.name in integ_test_config.keys():
-                test_suite = IntegTestSuite(
-                    component,
-                    integ_test_config[component.name],
-                    bundle_manifest,
-                    build_manifest,
-                    work_dir,
-                    args.s3_bucket,
-                    test_recorder
-                )
-                test_results = test_suite.execute()
-                all_results.append(component.name, test_results)
 
-            else:
-                logging.info(
-                    "Skipping tests for %s, as it is currently not supported"
-                    % component.name
-                )
+        for component in test_manifest.components:
+            if component.integ_test is not None:
+                integ_test_config[component.name] = component
+
+            test_suite = IntegTestSuite(
+                component,
+                integ_test_config[component.name],
+                "",
+                "",
+                work_dir,
+                args.s3_bucket,
+                test_recorder
+            )
+            test_results = test_suite.execute()
+
+        all_results.append(component.name, test_results)
+
+        # for component in bundle_manifest.components:
+        #     if component.name in integ_test_config.keys():
+        #         test_suite = IntegTestSuite(
+        #             component,
+        #             integ_test_config[component.name],
+        #             bundle_manifest,
+        #             build_manifest,
+        #             work_dir,
+        #             args.s3_bucket,
+        #             test_recorder
+        #         )
+        #         test_results = test_suite.execute()
+        #         all_results.append(component.name, test_results)
+
+        #     else:
+        #         logging.info(
+        #             "Skipping tests for %s, as it is currently not supported"
+        #             % component.name
+        #         )
 
         all_results.log()
 

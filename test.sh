@@ -18,6 +18,10 @@ case $1 in
   echo "${@:2}"
   "$DIR/run.sh" "$DIR/src/run_bwc_test.py" "${@:2}"
   ;;
+  "release-test")
+  echo "${@:2}"
+  "$DIR/run.sh" "$DIR/src/run_release_test.py" "${@:2}"
+  ;;
   *)
   echo "Invalid Test suite"
   exit 1

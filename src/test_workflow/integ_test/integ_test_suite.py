@@ -37,6 +37,9 @@ class IntegTestSuite:
             test_recorder
     ):
         self.component = component
+        self.component.repository = "https://github.com/opensearch-project/opensearch-dashboards-functional-test.git"
+        self.component.name = "opensearch-dashboards-functional-test"
+        self.component.commit_id = "16caeb7d21e0295d3ebbf4a3fcc83ba37b81d86e"
         self.bundle_manifest = bundle_manifest
         self.build_manifest = build_manifest
         self.work_dir = work_dir

@@ -81,6 +81,19 @@ class ScriptFinder:
         return cls.__find_script("integtest.sh", paths)
 
     @classmethod
+    def find_release_test_script(cls, component_name, git_dir):
+        paths = [
+            os.path.realpath(os.path.join(git_dir, "integtest.sh")),
+            os.path.realpath(os.path.join(git_dir, "scripts/integtest.sh")),
+            os.path.realpath(
+                os.path.join(cls.component_scripts_path, component_name, "integtest.sh")
+            ),
+            os.path.realpath(os.path.join(cls.default_scripts_path, "integtest.sh")),
+        ]
+
+        return cls.__find_script("integtest.sh", paths)
+
+    @classmethod
     def find_install_script(cls, component_name):
         paths = [
             os.path.realpath(
