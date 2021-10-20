@@ -2,11 +2,11 @@ components:
   - name: opensearch-dashboards-functional-test
     integ-test:
       test-configs:
-        - with-security
+        # - with-security
         - without-security
     bwc-test:
       test-configs:
-        - with-security
+        # - with-security
         - without-security
 
   # - name: index-management

@@ -78,7 +78,8 @@ class LocalTestCluster(TestCluster):
         self.save_logs.save_test_result_data(test_result_data)
 
     def url(self, path=""):
-        return f'{"https" if self.security_enabled else "http"}://{self.endpoint()}:{self.port()}{path}'
+        return "https://search-tianleh-test-os-l6fb7p4khyk5vriksf2zh2ubpy.us-east-1.es.amazonaws.com/_dashboards"
+        # return f'{"https" if self.security_enabled else "http"}://{self.endpoint()}:{self.port()}{path}'
 
     def __download_tarball_from_s3(self):
         s3_path = BundleManifest.get_tarball_relative_location(

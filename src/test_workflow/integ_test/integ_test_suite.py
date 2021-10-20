@@ -100,29 +100,51 @@ class IntegTestSuite:
                 "additional-cluster-configs"
             )
             logging.info(f"Additional config found: {self.additional_cluster_config}")
-        with LocalTestCluster.create(
-                self.work_dir,
-                self.component.name,
-                self.additional_cluster_config,
-                self.bundle_manifest,
-                security,
-                config,
-                self.test_recorder,
-                self.s3_bucket_name) as (test_cluster_endpoint, test_cluster_port):
             self.__pretty_print_message(
                 "Running integration tests for " + self.component.name
             )
-            os.chdir(self.work_dir)
-            return self.__execute_integtest_sh(
-                test_cluster_endpoint, test_cluster_port, security, config
-            )
+        self.__pretty_print_message(
+                "Running integration tests for " + self.component.name
+        )    
+
+        test_cluster_endpoint = "localhost"  
+        test_cluster_port = 5601                  
+        os.chdir(self.work_dir)
+        # return self.__execute_integtest_sh(
+        #     test_cluster_endpoint, test_cluster_port, security, config
+        # )
+        return self.__execute_integtest_sh(
+            test_cluster_endpoint, test_cluster_port, security, config
+        )
+        
+        # with LocalTestCluster.create(
+        #         self.work_dir,
+        #         self.component.name,
+        #         self.additional_cluster_config,
+        #         self.bundle_manifest,
+        #         security,
+        #         config,
+        #         self.test_recorder,
+        #         self.s3_bucket_name) as (test_cluster_endpoint, test_cluster_port):
+        #     self.__pretty_print_message(
+        #         "Running integration tests for " + self.component.name
+        #     )
+        #     os.chdir(self.work_dir)
+        #     # return self.__execute_integtest_sh(
+        #     #     test_cluster_endpoint, test_cluster_port, security, config
+        #     # )
+        #     return self.__execute_integtest_sh(
+        #         test_cluster_endpoint, test_cluster_port, security, config
+        #     )
 
     def __execute_integtest_sh(self, endpoint, port, security, test_config):
         script = ScriptFinder.find_integ_test_script(
             self.component.name, self.repo.working_directory
         )
         if os.path.exists(script):
-            cmd = f"{script} -b {endpoint} -p {port} -s {str(security).lower()} -v {self.bundle_manifest.build.version}"
+            # cmd = f"{script} -b {endpoint} -p {port} -s {str(security).lower()} -v {self.bundle_manifest.build.version}"
+
+            cmd = f"{script} -b {endpoint} -p {port} -s {str(security).lower()}"
             work_dir = (
                 os.path.join(self.repo.dir, self.test_config.working_directory)
                 if self.test_config.working_directory is not None
