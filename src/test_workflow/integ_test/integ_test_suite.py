@@ -7,6 +7,8 @@
 import glob
 import logging
 import os
+import time
+import subprocess
 
 from git.git_repository import GitRepository
 from paths.script_finder import ScriptFinder
@@ -37,9 +39,13 @@ class IntegTestSuite:
             test_recorder
     ):
         self.component = component
+
+        # logging.info("inside test suite, component is " + component)
+
         self.component.repository = "https://github.com/opensearch-project/opensearch-dashboards-functional-test.git"
         self.component.name = "opensearch-dashboards-functional-test"
         self.component.commit_id = "16caeb7d21e0295d3ebbf4a3fcc83ba37b81d86e"
+
         self.bundle_manifest = bundle_manifest
         self.build_manifest = build_manifest
         self.work_dir = work_dir
@@ -107,12 +113,39 @@ class IntegTestSuite:
                 "Running integration tests for " + self.component.name
         )    
 
+        self.__pretty_print_message(
+                "Running integration tests for bundle_manifest" + self.bundle_manifest
+        )    
+
+        self.__pretty_print_message(
+                "Running integration tests for s3_bucket_name" + self.s3_bucket_name
+        )    
+
         test_cluster_endpoint = "localhost"  
         test_cluster_port = 5601                  
         os.chdir(self.work_dir)
         # return self.__execute_integtest_sh(
         #     test_cluster_endpoint, test_cluster_port, security, config
         # )
+
+        # os.system("pwd")
+        subprocess.run(["pwd"])
+
+        subprocess.Popen("sh /usr/share/opensearch/opensearch-build/src/cluster/run_opensearch.sh",   stdout=subprocess.PIPE, 
+                 stderr=subprocess.PIPE,shell=True)
+
+        # subprocess.run(["sh", "/usr/share/opensearch/opensearch-build/src/cluster/run_opensearch.sh"])
+        # os.system("sh /usr/share/opensearch/opensearch-build/src/cluster/run_opensearch.sh")
+
+        time.sleep(60)
+        subprocess.Popen("sh /usr/share/opensearch/opensearch-build/src/cluster/run_opensearch_dashboards.sh",   stdout=subprocess.PIPE, 
+                 stderr=subprocess.PIPE,shell=True)
+
+        # subprocess.run(["sh", "/usr/share/opensearch/opensearch-build/src/cluster/run_opensearch_dashboards.sh"])
+
+        # os.system("sh /usr/share/opensearch/opensearch-build/src/cluster/run_opensearch_dashboards.sh")
+
+        time.sleep(60)
         return self.__execute_integtest_sh(
             test_cluster_endpoint, test_cluster_port, security, config
         )

@@ -42,6 +42,10 @@ components:
   - name: traceAnalyticsDashboards
     repository: https://github.com/opensearch-project/trace-analytics.git
     ref: "1.1"
+  - name: functionalTestDashboards
+    repository: https://github.com/opensearch-project/opensearch-dashboards-functional-test.git
+    ref: "main"
+
   # - name: ganttChartDashboards
   #   repository: ????????
   #   ref: main
