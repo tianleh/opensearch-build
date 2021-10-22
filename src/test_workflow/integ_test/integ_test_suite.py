@@ -9,6 +9,8 @@ import logging
 import os
 import time
 import subprocess
+import json
+
 
 from git.git_repository import GitRepository
 from paths.script_finder import ScriptFinder
@@ -40,11 +42,17 @@ class IntegTestSuite:
     ):
         self.component = component
 
+        # print("self.component is ")
+
+        # print(json.dumps(self.component))
+
+
+
         # logging.info("inside test suite, component is " + component)
 
-        self.component.repository = "https://github.com/opensearch-project/opensearch-dashboards-functional-test.git"
-        self.component.name = "opensearch-dashboards-functional-test"
-        self.component.commit_id = "16caeb7d21e0295d3ebbf4a3fcc83ba37b81d86e"
+        # self.component.repository = "https://github.com/opensearch-project/opensearch-dashboards-functional-test.git"
+        # self.component.name = "opensearch-dashboards-functional-test"
+        # self.component.commit_id = "16caeb7d21e0295d3ebbf4a3fcc83ba37b81d86e"
 
         self.bundle_manifest = bundle_manifest
         self.build_manifest = build_manifest
@@ -131,21 +139,21 @@ class IntegTestSuite:
         # os.system("pwd")
         subprocess.run(["pwd"])
 
-        subprocess.Popen("sh /usr/share/opensearch/opensearch-build/src/cluster/run_opensearch.sh",   stdout=subprocess.PIPE, 
-                 stderr=subprocess.PIPE,shell=True)
+        # subprocess.Popen("sh /usr/share/opensearch/opensearch-build/src/cluster/run_opensearch.sh",   stdout=subprocess.PIPE, 
+        #          stderr=subprocess.PIPE,shell=True)
 
         # subprocess.run(["sh", "/usr/share/opensearch/opensearch-build/src/cluster/run_opensearch.sh"])
         # os.system("sh /usr/share/opensearch/opensearch-build/src/cluster/run_opensearch.sh")
 
-        time.sleep(60)
-        subprocess.Popen("sh /usr/share/opensearch/opensearch-build/src/cluster/run_opensearch_dashboards.sh",   stdout=subprocess.PIPE, 
-                 stderr=subprocess.PIPE,shell=True)
+        # time.sleep(60)
+        # subprocess.Popen("sh /usr/share/opensearch/opensearch-build/src/cluster/run_opensearch_dashboards.sh",   stdout=subprocess.PIPE, 
+        #          stderr=subprocess.PIPE,shell=True)
 
         # subprocess.run(["sh", "/usr/share/opensearch/opensearch-build/src/cluster/run_opensearch_dashboards.sh"])
 
         # os.system("sh /usr/share/opensearch/opensearch-build/src/cluster/run_opensearch_dashboards.sh")
 
-        time.sleep(60)
+        # time.sleep(60)
         return self.__execute_integtest_sh(
             test_cluster_endpoint, test_cluster_port, security, config
         )
@@ -190,11 +198,11 @@ class IntegTestSuite:
             test_result_data = TestResultData(self.component.name, test_config, status, stdout, stderr,
                                               walk(results_dir))
             self.save_logs.save_test_result_data(test_result_data)
-            if stderr:
-                logging.info(
-                    "Integration test run failed for component " + self.component.name
-                )
-                logging.info(stderr)
+            # if stderr:
+            #     logging.info(
+            #         "Integration test run failed for component " + self.component.name
+            #     )
+            #     logging.info(stderr)
             return status
         else:
             logging.info(

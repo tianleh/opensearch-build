@@ -46,15 +46,20 @@ def main():
         os.chdir(work_dir)
         # bundle_manifest = BundleManifest.from_s3(
         #     args.s3_bucket, args.build_id, args.opensearch_version, args.architecture, work_dir)
+        build_manifest = BuildManifest.from_path("/usr/share/opensearch/opensearch-build/artifacts/manifest.yml")
         # build_manifest = BuildManifest.from_s3(
         #     args.s3_bucket, args.build_id, args.opensearch_version, args.architecture, work_dir)
         pull_build_repo(work_dir)
         # DependencyInstaller(build_manifest.build).install_all_maven_dependencies()
         all_results = TestSuiteResults()
 
-        for component in test_manifest.components:
-            if component.integ_test is not None:
-                integ_test_config[component.name] = component
+        for component in build_manifest.components:
+        # for component in test_manifest.components:
+            # if component.integ_test is not None:
+            #     integ_test_config[component.name] = component
+
+            # logging.info("checking component " + component.name)
+
 
             test_suite = IntegTestSuite(
                 component,
