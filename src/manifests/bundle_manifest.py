@@ -92,8 +92,21 @@ class BundleManifest(Manifest):
         return f"bundles/{opensearch_version}/{build_id}/{architecture}/opensearch-{opensearch_version}-linux-{architecture}.tar.gz"
 
     @staticmethod
+    def get_tarball_relative_location_for_dashboards(build_id, opensearch_version, architecture):
+        # replace with real build id for dashboards
+        return f"bundles/opensearch-dashboards/{opensearch_version}/109/{architecture}/opensearch-dashboards-{opensearch_version}-linux-{architecture}.tar.gz"
+
+    @staticmethod
     def get_tarball_name(opensearch_version, architecture):
         return f"opensearch-{opensearch_version}-linux-{architecture}.tar.gz"
+
+    @staticmethod
+    def get_tarball_name_for_dashboards(opensearch_version, architecture):
+        return f"opensearch-dashboards-{opensearch_version}-linux-{architecture}.tar.gz"
+
+    @staticmethod
+    def get_tarball_name_without_extension_for_dashboards(opensearch_version, architecture):
+        return f"opensearch-dashboards-{opensearch_version}-linux-{architecture}"
 
     @staticmethod
     def get_bundle_manifest_relative_location(

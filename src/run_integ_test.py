@@ -44,6 +44,9 @@ def main():
         logging.info("Switching to temporary work_dir: " + work_dir)
         test_recorder = TestRecorder(args.test_run_id, "integ-test", work_dir)
         os.chdir(work_dir)
+
+        bundle_manifest = BundleManifest.from_path("/usr/share/opensearch/opensearch-build/artifacts/bundle_manifest.yml")
+
         # bundle_manifest = BundleManifest.from_s3(
         #     args.s3_bucket, args.build_id, args.opensearch_version, args.architecture, work_dir)
         build_manifest = BuildManifest.from_path("/usr/share/opensearch/opensearch-build/artifacts/manifest.yml")
@@ -53,7 +56,7 @@ def main():
         # DependencyInstaller(build_manifest.build).install_all_maven_dependencies()
         all_results = TestSuiteResults()
 
-        for component in build_manifest.components:
+        for component in bundle_manifest.components:
         # for component in test_manifest.components:
             # if component.integ_test is not None:
             #     integ_test_config[component.name] = component
@@ -64,8 +67,8 @@ def main():
             test_suite = IntegTestSuite(
                 component,
                 integ_test_config[component.name],
-                "",
-                "",
+                bundle_manifest,
+                build_manifest,                
                 work_dir,
                 args.s3_bucket,
                 test_recorder

@@ -117,21 +117,21 @@ class IntegTestSuite:
             self.__pretty_print_message(
                 "Running integration tests for " + self.component.name
             )
-        self.__pretty_print_message(
-                "Running integration tests for " + self.component.name
-        )    
+        # self.__pretty_print_message(
+        #         "Running integration tests for " + self.component.name
+        # )    
 
-        self.__pretty_print_message(
-                "Running integration tests for bundle_manifest" + self.bundle_manifest
-        )    
+        # self.__pretty_print_message(
+        #         "Running integration tests for bundle_manifest" + self.bundle_manifest
+        # )    
 
-        self.__pretty_print_message(
-                "Running integration tests for s3_bucket_name" + self.s3_bucket_name
-        )    
+        # self.__pretty_print_message(
+        #         "Running integration tests for s3_bucket_name" + self.s3_bucket_name
+        # )    
 
-        test_cluster_endpoint = "localhost"  
-        test_cluster_port = 5601                  
-        os.chdir(self.work_dir)
+        # test_cluster_endpoint = "localhost"  
+        # test_cluster_port = 5601                  
+        # os.chdir(self.work_dir)
         # return self.__execute_integtest_sh(
         #     test_cluster_endpoint, test_cluster_port, security, config
         # )
@@ -154,29 +154,29 @@ class IntegTestSuite:
         # os.system("sh /usr/share/opensearch/opensearch-build/src/cluster/run_opensearch_dashboards.sh")
 
         # time.sleep(60)
-        return self.__execute_integtest_sh(
-            test_cluster_endpoint, test_cluster_port, security, config
-        )
+        # return self.__execute_integtest_sh(
+        #     test_cluster_endpoint, test_cluster_port, security, config
+        # )
         
-        # with LocalTestCluster.create(
-        #         self.work_dir,
-        #         self.component.name,
-        #         self.additional_cluster_config,
-        #         self.bundle_manifest,
-        #         security,
-        #         config,
-        #         self.test_recorder,
-        #         self.s3_bucket_name) as (test_cluster_endpoint, test_cluster_port):
-        #     self.__pretty_print_message(
-        #         "Running integration tests for " + self.component.name
-        #     )
-        #     os.chdir(self.work_dir)
-        #     # return self.__execute_integtest_sh(
-        #     #     test_cluster_endpoint, test_cluster_port, security, config
-        #     # )
-        #     return self.__execute_integtest_sh(
-        #         test_cluster_endpoint, test_cluster_port, security, config
-        #     )
+        with LocalTestCluster.create(
+                self.work_dir,
+                self.component.name,
+                self.additional_cluster_config,
+                self.bundle_manifest,
+                security,
+                config,
+                self.test_recorder,
+                self.s3_bucket_name) as (test_cluster_endpoint, test_cluster_port):
+            self.__pretty_print_message(
+                "Running integration tests for " + self.component.name
+            )
+            os.chdir(self.work_dir)
+            # return self.__execute_integtest_sh(
+            #     test_cluster_endpoint, test_cluster_port, security, config
+            # )
+            return self.__execute_integtest_sh(
+                test_cluster_endpoint, test_cluster_port, security, config
+            )
 
     def __execute_integtest_sh(self, endpoint, port, security, test_config):
         script = ScriptFinder.find_integ_test_script(
