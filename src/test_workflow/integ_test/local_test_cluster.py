@@ -57,6 +57,8 @@ class LocalTestCluster(TestCluster):
                 os.path.join(self.install_dir, "config", "opensearch.yml")
             )
 
+        logging.info(f"install dir is {self.install_dir}")
+        
         self.process_handler.start("./opensearch-tar-install.sh", self.install_dir)
 
         logging.info(f"Started OpenSearch with parent PID {self.process_handler.pid}")
@@ -103,25 +105,28 @@ class LocalTestCluster(TestCluster):
         logging.info("Waiting for service to become available")
         url = self.url("/_cluster/health")
 
-        for attempt in range(10):
+        for attempt in range(100):
             try:
                 logging.info(f"Pinging {url} attempt {attempt}")
-                response = requests.get(url, verify=False, auth=("admin", "admin"))
+                response = requests.get(url, verify=False, auth=("admin", "admin"), timeout=2)
                 logging.info(f"{response.status_code}: {response.text}")
                 if response.status_code == 200 and ('"status":"green"' or '"status":"yellow"' in response.text):
                     logging.info("Service is available")
                     return
-            except requests.exceptions.ConnectionError:
+            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout) as e:
+            # except:
                 logging.info("Service not available yet")
-                if self.stdout:
-                    logging.info("- stdout:")
-                    with open(os.path.join(self.work_dir, self.stdout.name), "r") as stdout:
-                        logging.info(stdout.read())
-                if self.stderr:
-                    logging.info("- stderr:")
-                    with open(os.path.join(self.work_dir, self.stderr.name), "r") as stderr:
-                        logging.info(stderr.read())
-
+                # if self.process_handler.output:
+                #     logging.info("- stdout:")
+                #     self.process_handler.output.flush()
+                #     logging.info(self.process_handler.output.read())
+                # if self.process_handler.error:
+                #     logging.info("- stderr:")
+                #     self.process_handler.error.flush()
+                #     logging.info(self.process_handler.error.read())
+            finally:
+                logging.info("The 'try except' is finished")
+            
             time.sleep(10)
         raise ClusterCreationException("Cluster is not available after 10 attempts")
 

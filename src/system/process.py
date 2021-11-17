@@ -7,6 +7,7 @@
 import logging
 import subprocess
 import tempfile
+import os
 
 import psutil  # type: ignore
 
@@ -20,11 +21,21 @@ class Process:
         self.stderr = None
 
     def start(self, command, cwd):
+
+
         if self.started:
             raise ProcessStartedError(self.pid)
 
-        self.stdout = tempfile.NamedTemporaryFile()
-        self.stderr = tempfile.NamedTemporaryFile()
+        self.stdout = open("stdout.txt", "w")
+        self.stderr = open("stderr.txt", "w")
+        # self.stdout = tempfile.NamedTemporaryFile(mode='r+')
+        # self.stderr = tempfile.NamedTemporaryFile(mode='r+')
+        
+        os.system("pwd")
+
+        os.system("ls")
+
+        logging.info(f"inside start, cwd is {cwd}")
 
         self.process = subprocess.Popen(
             command,
@@ -53,11 +64,13 @@ class Process:
         logging.info(f"Process killed with exit code {self.process.returncode}")
 
         if self.stdout:
+            self.stdout.flush()
             self.stdout_data = self.stdout.read()
             self.stdout.close()
             self.stdout = None
 
         if self.stderr:
+            self.stderr.flush()
             self.stderr_data = self.stderr.read()
             self.stderr.close()
             self.stderr = None
