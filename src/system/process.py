@@ -26,10 +26,10 @@ class Process:
         if self.started:
             raise ProcessStartedError(self.pid)
 
-        self.stdout = open("stdout.txt", "w")
-        self.stderr = open("stderr.txt", "w")
-        # self.stdout = tempfile.NamedTemporaryFile(mode='r+')
-        # self.stderr = tempfile.NamedTemporaryFile(mode='r+')
+        # self.stdout = open("stdout.txt", "w")
+        # self.stderr = open("stderr.txt", "w")
+        self.stdout = tempfile.NamedTemporaryFile(mode="r+")
+        self.stderr = tempfile.NamedTemporaryFile(mode="r+")
         
         os.system("pwd")
 
