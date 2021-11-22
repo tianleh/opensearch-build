@@ -33,15 +33,42 @@ def main():
     bundle_recorder = BundleRecorder(build, output_dir, artifacts_dir, args.base_url)
 
     with Bundles.create(build_manifest, artifacts_dir, bundle_recorder, args.keep) as bundle:
+        os.system("pwd")
+        os.system("ls")
+        os.system("ls /usr/share/opensearch/workspace/opensearch-build")
+
         bundle.install_min()
+        os.system("pwd")
+        os.system("ls")
+        os.system("ls /usr/share/opensearch/workspace/opensearch-build")
+
         bundle.install_plugins()
+
+        os.system("pwd")
+        os.system("ls")
+        os.system("ls /usr/share/opensearch/workspace/opensearch-build")
+
         logging.info(f"Installed plugins: {bundle.installed_plugins}")
 
         #  Save a copy of the manifest inside of the tar
         bundle_recorder.write_manifest(bundle.min_dist.archive_path)
+        os.system("before package")
+        os.system("pwd")
+        os.system("ls")
+        os.system("ls /usr/share/opensearch/workspace/opensearch-build")
+
         bundle.package(output_dir)
 
+        os.system("before write_manifest")
+
+        os.system("pwd")
+        os.system("ls")
+        os.system("ls /usr/share/opensearch/workspace/opensearch-build")
+
         bundle_recorder.write_manifest(output_dir)
+        os.system("pwd")
+        os.system("ls")
+        os.system("ls /usr/share/opensearch/workspace/opensearch-build")
 
     logging.info("Done.")
 

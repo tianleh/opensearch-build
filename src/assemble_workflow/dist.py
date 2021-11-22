@@ -37,9 +37,25 @@ class Dist(ABC):
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), os.path.join(dest, "*"))
 
     def build(self, name, dest):
+
+        os.system("echo before __build__")
+        os.system("pwd")
+        os.system("ls")
+        os.system("ls /usr/share/opensearch/workspace/opensearch-build")
+
         self.__build__(name, dest)
+        os.system("pwd")
+        os.system("ls")
+        os.system("ls /usr/share/opensearch/workspace/opensearch-build")
+
         path = os.path.join(dest, name)
+        os.system("echo before copyfile")
+        os.system("pwd")
+        os.system("ls")
+        os.system("ls /usr/share/opensearch/workspace/opensearch-build")
+
         shutil.copyfile(name, path)
+
         logging.info(f"Published {path}.")
 
     @classmethod
@@ -73,5 +89,25 @@ class DistTar(Dist):
             tar.extractall(dest)
 
     def __build__(self, name, dest):
+        os.system("echo inside DistTar")
+        logging.info(f"name is {name}")
+        logging.info(f"dest is {dest}")
+
+        os.system("echo inside DistTar")
+        os.system("pwd")
+        os.system("ls")
+        os.system("ls /usr/share/opensearch/workspace/opensearch-build")
+
         with tarfile.open(name, "w:gz") as tar:
+
+            os.system("echo after open DistTar")
+            os.system("pwd")
+            os.system("ls")
+            os.system("ls /usr/share/opensearch/workspace/opensearch-build")
+
             tar.add(self.archive_path, arcname=os.path.basename(self.archive_path))
+
+            os.system("echo after add DistTar")
+            os.system("pwd")
+            os.system("ls")
+            os.system("ls /usr/share/opensearch/workspace/opensearch-build")
