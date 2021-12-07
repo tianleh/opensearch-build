@@ -65,6 +65,8 @@ class IntegTestSuite:
         # self.__install_build_dependencies()
         for config in self.test_config.integ_test["test-configs"]:
             status = self.__setup_cluster_and_execute_test_config(config)
+
+            logging.info(f"__setup_cluster_and_execute_test_config status is {status}")
             test_results.append(TestResult(self.component.name, config, status))
         return test_results
 
@@ -117,28 +119,48 @@ class IntegTestSuite:
             cmd = f"{script} -b {endpoint} -p {port} -s {str(security).lower()} -v {self.bundle_manifest.build.version}"
             work_dir = os.path.join(self.repo.dir, self.test_config.working_directory) if self.test_config.working_directory is not None else self.repo.dir
             (status, stdout, stderr) = execute(cmd, work_dir, True, False)
-            results_dir = os.path.join(work_dir, "build", "reports", "tests", "integTest")
+
+            logging.info(f"status,  is {status}")
+            logging.info(f"stdout is {stdout}")
+
+            logging.info(f"stderr is {stderr}")
+            logging.info(f"work_dir is {work_dir}")
+
+            # results_dir = os.path.join(work_dir, "build", "reports", "tests", "integTest")
             test_result_data = TestResultData(
                 self.component.name,
                 test_config,
                 status,
                 stdout,
                 stderr,
-                walk(results_dir)
+                self.get_test_artifact_files(work_dir)
+                # walk(results_dir)
             )
             self.save_logs.save_test_result_data(test_result_data)
+            logging.info(f"work_dir is {work_dir}")
+            os.system(f"ls {work_dir}")
+            logging.info("now copying")
+            os.system(f"cp -R {work_dir}/cypress '/usr/share/opensearch/workspace/temp_result'")
+
             if stderr:
                 logging.info("Integration test run failed for component " + self.component.name)
                 logging.info(stderr)
             return status
         else:
-            logging.info(f"{script} does not exist. Skipping integ tests for {self.name}")
+            logging.info(f"{script} does not exist. Skipping integ tests for {self.component.name}")
 
     @staticmethod
     def __pretty_print_message(message):
         logging.info("===============================================")
         logging.info(message)
         logging.info("===============================================")
+
+    def get_test_artifact_files(self, work_dir):
+        return {
+            "cypress-videos": os.path.join(work_dir, "cypress", "videos"),
+            "cypress-screenshots": os.path.join(work_dir, "cypress", "screenshots"),
+            "cypress-report": os.path.join(work_dir, "cypress", "results"),
+        }
 
 
 class InvalidTestConfigError(Exception):

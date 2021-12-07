@@ -45,14 +45,16 @@ class Service(abc.ABC):
 
         self.return_code = self.process_handler.terminate()
 
+        log_name = "logs"
+
         logging.info(f"inside service {self.port()}")
         logging.info(f"self.install_dir {self.install_dir}")
 
-        log_files = walk(os.path.join(self.install_dir, "logs"))
+        log_files = self.get_log_files()
 
         os.system("pwd")
 
-        os.system(f'ls {os.path.join(self.install_dir, "logs")}')
+        os.system(f'ls {os.path.join(self.install_dir, log_name)}')
 
         os.system(f'ls {self.install_dir}')
 
@@ -62,6 +64,10 @@ class Service(abc.ABC):
 
     def endpoint(self):
         return "localhost"
+
+    @abc.abstractmethod
+    def get_log_files(self):
+        pass
 
     @abc.abstractmethod
     def port(self):
@@ -89,7 +95,7 @@ class Service(abc.ABC):
     def wait_for_service(self):
         logging.info("Waiting for service to become available")
 
-        for attempt in range(20):
+        for attempt in range(10):
             try:
                 logging.info(f"Pinging service attempt {attempt}")
                 if self.service_alive():

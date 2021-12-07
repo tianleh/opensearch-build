@@ -69,3 +69,6 @@ class ServiceOpenSearch(Service):
 
     def port(self):
         return 9200
+
+    def get_log_files(self):
+        return {"opensearch-service-logs": os.path.join(self.install_dir, "logs")}

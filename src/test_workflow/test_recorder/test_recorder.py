@@ -54,9 +54,16 @@ class TestRecorder:
 
         def save_test_result_data(self, test_result_data: TestResultData):
             base = self.parent_class._create_base_folder_structure(test_result_data.component_name, test_result_data.component_test_config)
+
             dest_directory = os.path.join(base, "local-cluster-logs")
+
+            logging.info(f"save_test_result_data dest_directory is {dest_directory}")
+
             os.makedirs(dest_directory, exist_ok=True)
-            log_files = list(test_result_data.log_files)
+            log_files = test_result_data.log_files
+
+            logging.info(f"log_files is {log_files}")
+
             logging.info(
                 f"Recording local cluster logs for {test_result_data.component_name} with test configuration as "
                 f"{test_result_data.component_test_config} at {os.path.realpath(dest_directory)}"
@@ -86,10 +93,13 @@ class TestRecorder:
             #         ]
             #     )
             # ]
+            for log_dest_dir_name, source_log_dir in log_files.items():
+                dest_file = os.path.join(dest_directory, log_dest_dir_name)
+                shutil.copytree(source_log_dir, dest_file)
 
-            for log_file in log_files[0][2]:
-                dest_file = os.path.join(dest_directory, os.path.basename(log_file))
-                shutil.copyfile(os.path.join(log_files[0][0], log_file), dest_file)
+            # for log_file in log_files[0][2]:
+            #     dest_file = os.path.join(dest_directory, os.path.basename(log_file))
+            #     shutil.copyfile(os.path.join(log_files[0][0], log_file), dest_file)
 
     class RemoteClusterLogs(LogRecorder):
         def __init__(self, parent_class):
@@ -116,8 +126,19 @@ class TestRecorder:
             logging.info(f"Recording component test results for {test_result_data.component_name} at " f"{os.path.realpath(dest_directory)}")
             self.parent_class._generate_std_files(test_result_data.stdout, test_result_data.stderr, dest_directory)
             if test_result_data.log_files is not None:
-                results_dir = list(test_result_data.log_files)
-                for result in results_dir:
-                    dest_file = os.path.join(dest_directory, os.path.basename(result[0]))
-                    shutil.copyfile(result[0], dest_file)
+
+                for log_dest_dir_name, source_log_dir in test_result_data.log_files.items():
+
+                    if os.path.exists(source_log_dir):
+                        dest_file = os.path.join(dest_directory, log_dest_dir_name)
+                        shutil.copytree(source_log_dir, dest_file)
+
+                # results_dir = list(test_result_data.log_files)
+                # for result in results_dir:
+                #     dest_file = os.path.join(dest_directory, os.path.basename(result[0]))
+
+                #     logging.info("*******")
+                #     logging.info(f"result[0] is {result[0]}")
+                #     logging.info("*******")
+                #     shutil.copyfile(result[0], dest_file)
             self.parent_class._generate_yml(test_result_data, dest_directory)

@@ -87,3 +87,6 @@ class ServiceOpenSearchDashboards(Service):
 
     def port(self):
         return 5601
+
+    def get_log_files(self):
+        return {"opensearch-dashboards-service-logs": os.path.join(self.install_dir, "logs")}
