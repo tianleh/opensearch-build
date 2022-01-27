@@ -1,5 +1,5 @@
 import {
-  CloudFrontAllowedMethods, CloudFrontWebDistribution, LambdaEdgeEventType, OriginAccessIdentity,
+  CloudFrontAllowedMethods, CloudFrontWebDistribution, LambdaEdgeEventType, OriginAccessIdentity
 } from '@aws-cdk/aws-cloudfront';
 import { CanonicalUserPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
@@ -21,12 +21,7 @@ export class ArtifactsPublicAccess {
 
     // Incoming URLs from ci.opensearch.org will have a '/ci/123/' prefix, remove the prefix path from requests into S3.
     const urlRewriter = new Function(stack, 'CfUrlRewriter', {
-      code: Code.fromInline(`
-      exports.handler = (event, context, callback) => {
-        const request = event.Records[0].cf.request;
-        request.uri = request.uri.replace(/^\\/ci\\/...\\//, '\\/')
-        callback(null, request);
-      };`),
+      code: Code.fromAsset(''),
       handler: 'index.handler',
       runtime: Runtime.NODEJS_14_X,
     });
