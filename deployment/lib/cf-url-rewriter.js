@@ -8,36 +8,48 @@ exports.handler = async (event, context) => {
     request.uri = request.uri.replace(/^\/ci\/...\//, '\/')
     callback(null, request);
 
-    // Below is the working in progress logic to get the max build number under a version.
-    // Hardcode the version to be 1.2.0 and bucket name to test-access-1-20 for demo purpose.
+    // Below is the working in progress logic to get the max build number under a version with pagination support.
+    // Hardcode the version to be 1.7.1 and bucket name to test-access-1-20 for demo purpose.
     console.log('Received event:', JSON.stringify(event, null, 2));
 
-    // Get the object from the event and show its content type
     const bucket = "test-access-1-20";
 
-    // Create the parameters for calling listObjects
     var bucketParams = {
         Bucket: bucket,
-        Prefix: '1.2.0/',
+        Prefix: '1.7.1/',
         Delimiter: '/'
     };
 
     try {
-        const s3Response = await s3.listObjects(bucketParams).promise();
 
-        const commonPrefixes = s3Response.CommonPrefixes;
+        var isTruncated = true;
+        var continuationToken = null;
+
+        var commonPrefixesAll = [];
+
+        while (isTruncated) {
+
+            if (continuationToken) {
+                bucketParams.ContinuationToken = continuationToken;
+            }
+
+            const s3Response = await s3.listObjectsV2(bucketParams).promise();
+            const commonPrefixes = s3Response.CommonPrefixes;
+
+            commonPrefixesAll.push(...commonPrefixes);
+
+            isTruncated = s3Response.IsTruncated;
+            continuationToken = s3Response.NextContinuationToken;
+        }
 
         var maxBuildNumber = 0;
 
-        commonPrefixes.forEach((prefix) => {
-            // e.g '1.2.0/21/'
+        commonPrefixesAll.forEach((prefix) => {
+            // e.g '1.7.1/21/'
             const value = prefix['Prefix'];
 
             const reg = /\/(\d+)/;
-
             const result = value.match(reg);
-
-
 
             if (result) {
                 const number = parseInt(result[1]);
@@ -45,15 +57,11 @@ exports.handler = async (event, context) => {
                     maxBuildNumber = number;
                 }
             }
-        }
-        );
+        });
 
         console.log('maxBuildNumber', maxBuildNumber);
     }
     catch (ex) {
-        // if failed
-        // handle response here (obv: ex object)
-        // you can simply use logging
         console.error(ex);
     }
 };
