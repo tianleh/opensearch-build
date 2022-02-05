@@ -25,6 +25,12 @@ void call(Map args = [:]) {
     def latestBuildData = ['latest': "${BUILD_NUMBER}"]
     writeYaml file: 'index.yml', data: latestBuildData
 
+    def read = readYaml file: 'index.yml'
+
+    echo "file content is ${read}"
+
+    echo "ls -l".execute().text
+
     echo "Uploading index.yml to s3://${ARTIFACT_PRODUCTION_BUCKET_NAME}/${indexYamlPath}"
 
     uploadToS3(
