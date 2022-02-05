@@ -30,7 +30,7 @@ void call(Map args = [:]) {
     uploadToS3(
             sourcePath: 'index.yml',
             bucket: "${ARTIFACT_BUCKET_NAME}",
-            path: "${indexYamlPath}"
+            path: "${indexYamlPath}/index.yml"
     )
 
     echo "Uploading to s3://${ARTIFACT_PRODUCTION_BUCKET_NAME}/${artifactPath}"
