@@ -21,6 +21,18 @@ void call(Map args = [:]) {
             path: "${artifactPath}/dist"
     )
 
+    def indexYamlPath = buildManifest.getIndexYamlRoot("${JOB_NAME}")
+    def latestBuildData = ['latest': "${BUILD_NUMBER}"]
+    writeYaml file: 'index.yml', data: latestBuildData
+
+    echo "Uploading index.yml to s3://${ARTIFACT_PRODUCTION_BUCKET_NAME}/${indexYamlPath}"
+
+    uploadToS3(
+            sourcePath: 'index.yml',
+            bucket: "${ARTIFACT_BUCKET_NAME}",
+            path: "${indexYamlPath}"
+    )
+
     echo "Uploading to s3://${ARTIFACT_PRODUCTION_BUCKET_NAME}/${artifactPath}"
 
     withAWS(role: "${ARTIFACT_PROMOTION_ROLE_NAME}", roleAccount: "${AWS_ACCOUNT_ARTIFACT}", duration: 900, roleSessionName: 'jenkins-session') {
