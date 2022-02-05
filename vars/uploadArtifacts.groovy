@@ -29,8 +29,10 @@ void call(Map args = [:]) {
 
     echo "file content is ${read}"
 
-    echo "ls -l".execute().text
+    def ret = sh(script: 'uname', returnStdout: true)
 
+    println ret
+    
     echo "Uploading index.yml to s3://${ARTIFACT_PRODUCTION_BUCKET_NAME}/${indexYamlPath}"
 
     uploadToS3(
