@@ -29,10 +29,10 @@ void call(Map args = [:]) {
 
     echo "file content is ${read}"
 
-    def ret = sh(script: 'uname', returnStdout: true)
+    def ret = sh(script: 'ls -l', returnStdout: true)
 
     println ret
-    
+
     echo "Uploading index.yml to s3://${ARTIFACT_PRODUCTION_BUCKET_NAME}/${indexYamlPath}"
 
     uploadToS3(
@@ -40,6 +40,7 @@ void call(Map args = [:]) {
             bucket: "${ARTIFACT_BUCKET_NAME}",
             path: "${indexYamlPath}/index.yml"
     )
+        
 
     echo "Uploading to s3://${ARTIFACT_PRODUCTION_BUCKET_NAME}/${artifactPath}"
 

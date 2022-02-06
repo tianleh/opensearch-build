@@ -90,7 +90,7 @@ class BuildManifest implements Serializable {
                 this.build.architecture
         ].join("/")
     }
-
+    
     public String getIndexYamlRoot(String jobName) {
         return [
                 jobName,
