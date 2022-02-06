@@ -23,9 +23,9 @@ void call(Map args = [:]) {
 
     def indexYamlPath = buildManifest.getIndexYamlRoot("${JOB_NAME}")
     def latestBuildData = ['latest': "${BUILD_NUMBER}"]
-    writeYaml file: 'index.yml', data: latestBuildData
+    writeYaml file: 'dist/index.yml', data: latestBuildData
 
-    def read = readYaml file: 'index.yml'
+    def read = readYaml file: 'dist/index.yml'
 
     echo "file content is ${read}"
 
@@ -36,7 +36,7 @@ void call(Map args = [:]) {
     echo "Uploading index.yml to s3://${ARTIFACT_PRODUCTION_BUCKET_NAME}/${indexYamlPath}"
 
     uploadToS3(
-            sourcePath: 'index.yml',
+            sourcePath: 'dist/index.yml',
             bucket: "${ARTIFACT_BUCKET_NAME}",
             path: "${indexYamlPath}/index.yml"
     )
