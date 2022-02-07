@@ -1,8 +1,11 @@
 import {
-  CloudFrontAllowedMethods, CloudFrontWebDistribution, LambdaEdgeEventType, OriginAccessIdentity
+  CloudFrontAllowedMethods, CloudFrontWebDistribution, LambdaEdgeEventType, OriginAccessIdentity,
 } from '@aws-cdk/aws-cloudfront';
-import { CanonicalUserPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
+import {
+  CanonicalUserPrincipal, PolicyDocument, PolicyStatement,
+} from '@aws-cdk/aws-iam';
+import { Runtime } from '@aws-cdk/aws-lambda';
+import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
 import { IBucket } from '@aws-cdk/aws-s3';
 import { CfnOutput } from '@aws-cdk/core';
 import { BuildArtifactStack } from './build-artifact-stack';
@@ -20,11 +23,31 @@ export class ArtifactsPublicAccess {
     }));
 
     // Incoming URLs from ci.opensearch.org will have a '/ci/123/' prefix, remove the prefix path from requests into S3.
-    const urlRewriter = new Function(stack, 'CfUrlRewriter', {
-      code: Code.fromAsset('lib/cf-url-rewriter.js'),
-      handler: 'index.handler',
+    const urlRewriter = new NodejsFunction(stack, 'CfUrlRewriter', {
+      entry: `${__dirname}/../lib/lambdas/cf-url-rewriter.ts`,
+      handler: 'handler',
       runtime: Runtime.NODEJS_14_X,
+      bundling: {
+        minify: true,
+      },
     });
+
+    urlRewriter.addToRolePolicy(new PolicyStatement({
+      actions: [
+        'cloudfront:UpdateDistribution',
+        'cloudfront:CreateDistribution',
+      ],
+      resources: ['arn:aws:cloudfront:::*'],
+    }));
+    urlRewriter.addToRolePolicy(new PolicyStatement({
+      actions: [
+        'lambda:GetFunction',
+        'lambda:EnableReplication*',
+        'iam:PassRole',
+        'iam:CreateServiceLinkedRole',
+      ],
+      resources: ['*'],
+    }));
 
     const distro = new CloudFrontWebDistribution(stack, 'CloudFrontBuildBucket', {
       originConfigs: [
