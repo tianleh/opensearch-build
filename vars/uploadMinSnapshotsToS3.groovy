@@ -1,6 +1,5 @@
 void call(Map args = [:]) {
 
-
     def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
     List<Closure> fileActions = args.fileActions ?: []
     String manifest = args.manifest ?: "manifests/${INPUT_MANIFEST}"

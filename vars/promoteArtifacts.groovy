@@ -18,7 +18,6 @@ void call(Map args = [:]) {
     String version = inputManifest.build.version
 
     def artifactPath = "${DISTRIBUTION_JOB_NAME}/${version}/${DISTRIBUTION_BUILD_NUMBER}/${DISTRIBUTION_PLATFORM}/${DISTRIBUTION_ARCHITECTURE}/tar"
-    print("artifactPath ${artifactPath}")
 
     withAWS(role: "${ARTIFACT_DOWNLOAD_ROLE_NAME}", roleAccount: "${AWS_ACCOUNT_PUBLIC}", duration: 900, roleSessionName: 'jenkins-session') {
         s3Download(bucket: "${ARTIFACT_BUCKET_NAME}", file: "$WORKSPACE/artifacts", path: "${artifactPath}/",  force: true)
